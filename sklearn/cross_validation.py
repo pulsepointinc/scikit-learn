@@ -1518,6 +1518,9 @@ def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
                           for k, v in parameters.items()))
         print("[CV] %s %s" % (msg, (64 - len(msg)) * '.'))
 
+    #Initialize fit_params if None
+    fit_params = fit_params if fit_params is not None else {}
+
     # Save sample_weight values for scorer
     if 'sample_weight' in fit_params:
         train_sample_weight = _index_param_value(X, fit_params['sample_weight'], train)
@@ -1526,9 +1529,7 @@ def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
         train_sample_weight = None
         test_sample_weight = None
 
-
     # Adjust length of sample weights
-    fit_params = fit_params if fit_params is not None else {}
     fit_params = dict([(k, _index_param_value(X, v, train))
                       for k, v in fit_params.items()])
 
@@ -1617,10 +1618,17 @@ def _safe_split(estimator, X, y, indices, train_indices=None):
 
 def _score(estimator, X_test, y_test, scorer, sample_weight=None):
     """Compute the score of an estimator on a given test set."""
+
+    scorer_kwargs = {}
+
+    # Add sample weight to argument list if one is present
+    if sample_weight is not None:
+        scorer_kwargs['sample_weight'] = sample_weight
+
     if y_test is None:
-        score = scorer(estimator, X_test, sample_weight=sample_weight)
+        score = scorer(estimator, X_test, **scorer_kwargs)
     else:
-        score = scorer(estimator, X_test, y_test, sample_weight=sample_weight)
+        score = scorer(estimator, X_test, y_test, **scorer_kwargs)
     if not isinstance(score, numbers.Number):
         raise ValueError("scoring must return a number, got %s (%s) instead."
                          % (str(score), type(score)))
