@@ -1518,6 +1518,15 @@ def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
                           for k, v in parameters.items()))
         print("[CV] %s %s" % (msg, (64 - len(msg)) * '.'))
 
+    # Save sample_weight values for scorer
+    if 'sample_weight' in fit_params:
+        train_sample_weight = _index_param_value(X, fit_params['sample_weight'], train)
+        test_sample_weight = _index_param_value(X, fit_params['sample_weight'], test)
+    else:
+        train_sample_weight = None
+        test_sample_weight = None
+
+
     # Adjust length of sample weights
     fit_params = fit_params if fit_params is not None else {}
     fit_params = dict([(k, _index_param_value(X, v, train))
@@ -1554,9 +1563,9 @@ def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
                              )
 
     else:
-        test_score = _score(estimator, X_test, y_test, scorer)
+        test_score = _score(estimator, X_test, y_test, scorer, sample_weight=test_sample_weight)
         if return_train_score:
-            train_score = _score(estimator, X_train, y_train, scorer)
+            train_score = _score(estimator, X_train, y_train, scorer, sample_weight=train_sample_weight)
 
     scoring_time = time.time() - start_time
 
@@ -1606,12 +1615,12 @@ def _safe_split(estimator, X, y, indices, train_indices=None):
     return X_subset, y_subset
 
 
-def _score(estimator, X_test, y_test, scorer):
+def _score(estimator, X_test, y_test, scorer, sample_weight=None):
     """Compute the score of an estimator on a given test set."""
     if y_test is None:
-        score = scorer(estimator, X_test)
+        score = scorer(estimator, X_test, sample_weight=sample_weight)
     else:
-        score = scorer(estimator, X_test, y_test)
+        score = scorer(estimator, X_test, y_test, sample_weight=sample_weight)
     if not isinstance(score, numbers.Number):
         raise ValueError("scoring must return a number, got %s (%s) instead."
                          % (str(score), type(score)))
