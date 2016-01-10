@@ -1522,7 +1522,7 @@ def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
                           for k, v in parameters.items()))
         print("[CV] %s %s" % (msg, (64 - len(msg)) * '.'))
 
-    #Initialize fit_params if None
+    # Initialize fit_params if None
     fit_params = fit_params if fit_params is not None else {}
 
     # Save sample_weight values for scorer
@@ -1568,9 +1568,11 @@ def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
                              )
 
     else:
-        test_score = _score(estimator, X_test, y_test, scorer, sample_weight=test_sample_weight)
+        test_score = _score(estimator, X_test, y_test, scorer,
+                            sample_weight=test_sample_weight)
         if return_train_score:
-            train_score = _score(estimator, X_train, y_train, scorer, sample_weight=train_sample_weight)
+            train_score = _score(estimator, X_train, y_train, scorer,
+                                 sample_weight=train_sample_weight)
 
     scoring_time = time.time() - start_time
 
