@@ -262,7 +262,8 @@ class ParameterSampler(object):
 
 
 def fit_grid_point(X, y, estimator, parameters, train, test, scorer,
-                   verbose, error_score='raise', **fit_params):
+                   verbose, error_score='raise', score_sample_weight=False,
+                   **fit_params):
     """Run fit on one set of parameters.
 
     Parameters
@@ -304,6 +305,9 @@ def fit_grid_point(X, y, estimator, parameters, train, test, scorer,
         FitFailedWarning is raised. This parameter does not affect the refit
         step, which will always raise the error.
 
+    score_sample_weight : boolean, optional, default: False
+        Use sample_weight when scoring model.
+
     Returns
     -------
     score : float
@@ -317,7 +321,8 @@ def fit_grid_point(X, y, estimator, parameters, train, test, scorer,
     """
     score, n_samples_test, _ = _fit_and_score(estimator, X, y, scorer, train,
                                               test, verbose, parameters,
-                                              fit_params, error_score)
+                                              fit_params, error_score,
+                                              score_sample_weight=score_sample_weight)
     return score, parameters, n_samples_test
 
 
@@ -369,7 +374,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
     def __init__(self, estimator, scoring=None,
                  fit_params=None, n_jobs=1, iid=True,
                  refit=True, cv=None, verbose=0, pre_dispatch='2*n_jobs',
-                 error_score='raise'):
+                 error_score='raise', score_sample_weight=False):
 
         self.scoring = scoring
         self.estimator = estimator
@@ -381,6 +386,7 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
         self.verbose = verbose
         self.pre_dispatch = pre_dispatch
         self.error_score = error_score
+        self.score_sample_weight = score_sample_weight
 
     @property
     def _estimator_type(self):
@@ -556,7 +562,8 @@ class BaseSearchCV(six.with_metaclass(ABCMeta, BaseEstimator,
             delayed(_fit_and_score)(clone(base_estimator), X, y, self.scorer_,
                                     train, test, self.verbose, parameters,
                                     self.fit_params, return_parameters=True,
-                                    error_score=self.error_score)
+                                    error_score=self.error_score,
+                                    score_sample_weight=self.score_sample_weight)
                 for parameters in parameter_iterable
                 for train, test in cv)
 
@@ -707,6 +714,9 @@ class GridSearchCV(BaseSearchCV):
         FitFailedWarning is raised. This parameter does not affect the refit
         step, which will always raise the error.
 
+    score_sample_weight : boolean, optional, default=False
+        Use sample_weight when scoring model. Requires a scorer which supports
+        sample_weight.
 
     Examples
     --------
@@ -785,11 +795,12 @@ class GridSearchCV(BaseSearchCV):
 
     def __init__(self, estimator, param_grid, scoring=None, fit_params=None,
                  n_jobs=1, iid=True, refit=True, cv=None, verbose=0,
-                 pre_dispatch='2*n_jobs', error_score='raise'):
+                 pre_dispatch='2*n_jobs', error_score='raise',
+                 score_sample_weight=False):
 
         super(GridSearchCV, self).__init__(
             estimator, scoring, fit_params, n_jobs, iid,
-            refit, cv, verbose, pre_dispatch, error_score)
+            refit, cv, verbose, pre_dispatch, error_score, score_sample_weight)
         self.param_grid = param_grid
         _check_param_grid(param_grid)
 

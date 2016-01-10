@@ -1447,7 +1447,8 @@ def cross_val_score(estimator, X, y=None, scoring=None, cv=None, n_jobs=1,
 
 def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
                    parameters, fit_params, return_train_score=False,
-                   return_parameters=False, error_score='raise'):
+                   return_parameters=False, error_score='raise',
+                   score_sample_weight=False):
     """Fit estimator and compute scores for a given dataset split.
 
     Parameters
@@ -1493,6 +1494,9 @@ def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
     return_parameters : boolean, optional, default: False
         Return parameters that has been used for the estimator.
 
+    score_sample_weight : boolean, optional, default: False
+        Use sample_weight when scoring model.
+
     Returns
     -------
     train_score : float, optional
@@ -1522,7 +1526,7 @@ def _fit_and_score(estimator, X, y, scorer, train, test, verbose,
     fit_params = fit_params if fit_params is not None else {}
 
     # Save sample_weight values for scorer
-    if 'sample_weight' in fit_params:
+    if 'sample_weight' in fit_params and score_sample_weight:
         train_sample_weight = _index_param_value(X, fit_params['sample_weight'], train)
         test_sample_weight = _index_param_value(X, fit_params['sample_weight'], test)
     else:
