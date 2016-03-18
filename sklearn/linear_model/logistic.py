@@ -796,10 +796,12 @@ def _log_reg_scoring_path(X, y, train, test, pos_class=None, Cs=10,
         values are chosen in a logarithmic scale between 1e-4 and 1e4.
         If not provided, then a fixed set of values for Cs are used.
 
-    scoring : callable
-        For a list of scoring functions that can be used, look at
-        :mod:`sklearn.metrics`. The default scoring option used is
-        accuracy_score.
+    scoring : callable or None, optional, default: None
+        A string (see model evaluation documentation) or
+        a scorer callable object / function with signature
+        ``scorer(estimator, X, y)``. For a list of scoring functions
+        that can be used, look at :mod:`sklearn.metrics`. The
+        default scoring option used is accuracy_score.
 
     fit_intercept : bool
         If False, then the bias term is set to zero. Else the last
@@ -830,8 +832,8 @@ def _log_reg_scoring_path(X, y, train, test, pos_class=None, Cs=10,
         Decides which solver to use.
 
     penalty : str, 'l1' or 'l2'
-        Used to specify the norm used in the penalization. The newton-cg and
-        lbfgs solvers support only l2 penalties.
+        Used to specify the norm used in the penalization. The 'newton-cg',
+        'sag' and 'lbfgs' solvers support only l2 penalties.
 
     dual : bool
         Dual or primal formulation. Dual formulation is only implemented for
@@ -970,8 +972,8 @@ class LogisticRegression(BaseEstimator, LinearClassifierMixin,
     Parameters
     ----------
     penalty : str, 'l1' or 'l2', default: 'l2'
-        Used to specify the norm used in the penalization. The newton-cg, sag
-        and lbfgs solvers support only l2 penalties.
+        Used to specify the norm used in the penalization. The 'newton-cg',
+        'sag' and 'lbfgs' solvers support only l2 penalties.
 
     dual : bool, default: False
         Dual or primal formulation. Dual formulation is only implemented for
@@ -1359,8 +1361,8 @@ class LogisticRegressionCV(LogisticRegression, BaseEstimator,
         list of possible cross-validation objects.
 
     penalty : str, 'l1' or 'l2'
-        Used to specify the norm used in the penalization. The newton-cg and
-        lbfgs solvers support only l2 penalties.
+        Used to specify the norm used in the penalization. The 'newton-cg',
+        'sag' and 'lbfgs' solvers support only l2 penalties.
 
     dual : bool
         Dual or primal formulation. Dual formulation is only implemented for
