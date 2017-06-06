@@ -255,7 +255,7 @@ class Imputer(BaseEstimator, TransformerMixin):
             # Constant value
             elif strategy == "constant":
                 if self.constant_missing_values:
-                    return np.repeat(self.constant_missing_values, X.shape[axis])
+                    return np.repeat(self.constant_missing_values, X.shape[not axis])
                 else:
                     raise ValueError('Please specify constant_missing_values when choosing strategy constant')
 
@@ -313,7 +313,7 @@ class Imputer(BaseEstimator, TransformerMixin):
         # Constant value
         elif strategy == "constant":
             if self.constant_missing_values:
-                return np.repeat(self.constant_missing_values, X.shape[axis])
+                return np.repeat(self.constant_missing_values, X.shape[not axis])
             else:
                 raise ValueError('Please specify constant_missing_values when choosing strategy constant')
 
